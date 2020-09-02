@@ -1,0 +1,5 @@
+#!/bin/bash
+
+lsof -i tcp:"$1"
+lsof -i tcp:"$1" | tail -1 | cut -d " " -f5 | xargs kill -9 
+lsof -i tcp:"$1"

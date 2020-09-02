@@ -1,0 +1,2 @@
+branch=`git status | head -1 |  sed "s/.*On branch //"`
+git pull origin $branch
