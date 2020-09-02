@@ -2,16 +2,23 @@
 iteration=3
 work_duration=25
 rest_duration=5
-multiplier=1
 
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     multiplier=1;;
-    Darwin*)    multiplier=60;;
-    *)          machine="check usage of sleep command and specify under m flag"
-esac
+countdown()
+(
+  IFS=:
+  set -- $*
+  secs=$1
+  while [ $secs -gt 0 ]
+  do
+    sleep 1 &
+    printf "\r%02d:%02d:%02d" $((secs/3600)) $(( (secs/60)%60)) $((secs%60))
+    secs=$(( $secs - 1 ))
+    wait
+  done
+  echo
+)
 
-while getopts ":i:w:r:m:" opt; do
+while getopts ":i:w:r:" opt; do
   case $opt in
     i)
       iteration=$OPTARG
@@ -21,9 +28,6 @@ while getopts ":i:w:r:m:" opt; do
       ;;
     r)
       rest_duration=$OPTARG
-      ;;
-    m)
-      multiplier=$OPTARG
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -40,15 +44,14 @@ echo "Iteration: $iteration"
 echo "Work duration: $work_duration m"
 echo "Rest duration: $rest_duration m"
 
-work_duration=$(($work_duration * $multiplier))
-rest_duration=$(($rest_duration * $multiplier))
-
 for ((i=1; i<=$iteration; i++))
 do
-    echo "Iteration $i"
-    sleep "$work_duration"m
+    echo "Iteration $i" 
+    echo "Work"
+    countdown $(( $work_duration * 60))
     osascript -e 'display notification "Time to take a break" with title "Break"'
-    sleep "$rest_duration"m
+    echo "Rest"
+    countdown $(( $rest_duration * 60))
     osascript -e 'display notification "Time to get back to work" with title "Work"'
 done
 osascript -e 'display notification "Time to take a long break" with title "Done :)"'
