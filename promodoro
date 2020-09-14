@@ -44,7 +44,7 @@ echo "Iteration: $iteration"
 echo "Work duration: $work_duration m"
 echo "Rest duration: $rest_duration m"
 
-for ((i=1; i<=$iteration; i++))
+for ((i=1; i<=$iteration - 1; i++))
 do
     echo "Iteration $i" 
     echo "Work"
@@ -54,4 +54,8 @@ do
     countdown $(( $rest_duration * 60))
     osascript -e 'display notification "Time to get back to work" with title "Work"'
 done
+
+echo "Last iteration" 
+echo "Work"
+countdown $(( $work_duration * 60))
 osascript -e 'display notification "Time to take a long break" with title "Done :)"'
